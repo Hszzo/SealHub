@@ -1,9 +1,8 @@
 --[[
-    SEAL ADMIN HUB V16
-    by @хсе
+    SEAL ADMIN HUB V17
+    by @hszzo
 ]]
 
--- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -25,18 +24,21 @@ local character = player.Character
 local humanoid = character:WaitForChild("Humanoid")
 local hrp = character:WaitForChild("HumanoidRootPart")
 
+-- Цвета (улучшенная палитра)
 local C = {
-    bg = Color3.fromRGB(10, 10, 10),
-    bgLight = Color3.fromRGB(25, 25, 25),
+    bg = Color3.fromRGB(8, 8, 8),
+    bgLight = Color3.fromRGB(18, 18, 18),
     bgDark = Color3.fromRGB(5, 5, 5),
     accent = Color3.fromRGB(255, 255, 255),
-    accent2 = Color3.fromRGB(180, 180, 180),
-    green = Color3.fromRGB(200, 200, 200),
-    red = Color3.fromRGB(100, 100, 100),
-    yellow = Color3.fromRGB(150, 150, 150),
+    accent2 = Color3.fromRGB(200, 200, 200),
+    green = Color3.fromRGB(0, 255, 128),
+    red = Color3.fromRGB(255, 80, 80),
+    yellow = Color3.fromRGB(255, 200, 0),
     white = Color3.fromRGB(255, 255, 255),
-    gray = Color3.fromRGB(120, 120, 120),
-    black = Color3.fromRGB(0, 0, 0)
+    gray = Color3.fromRGB(140, 140, 140),
+    black = Color3.fromRGB(0, 0, 0),
+    border = Color3.fromRGB(30, 30, 30),
+    hover = Color3.fromRGB(35, 35, 35)
 }
 
 local S = {
@@ -60,8 +62,9 @@ local loopConnections = {}
 local frameCounter = 0
 local FRAME_SKIP = 2
 local binds = {}
+local savedScripts = {}
 
--- Проверка ключа (простая обфускация)
+-- Проверка ключа
 local function checkKey(input)
     local k = ""
     for i = 1, 3 do
@@ -70,17 +73,31 @@ local function checkKey(input)
     return input == k
 end
 
+-- Рабочие скрипты (проверенные)
 local ScriptLibrary = {
-    {name = "Infinite Yield", url = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", desc = "Легендарный админ скрипт", category = "Админ"},
-    {name = "System Broken", url = "https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script", desc = "Флай, спид, телепорт", category = "Утилиты"},
-    {name = "Ultimate Trolling GUI", url = "https://rawscripts.net/raw/Universal-Script-ULTIMATE-TROLLING-GUI-V5-39695", desc = "Троллинг, флай, ноклип", category = "Троллинг"},
-    {name = "Telekinesis V5", url = "https://rawscripts.net/raw/Universal-Script-Fe-Telekinesis-V5-21542", desc = "Телекинез", category = "Физика"},
-    {name = "Dex Explorer", url = "https://raw.githubusercontent.com/infyiff/backup/main/dex.lua", desc = "Проводник", category = "Инструменты"},
-    {name = "SimpleSpy V3", url = "https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua", desc = "Сниффер", category = "Инструменты"},
-    {name = "CMD-X", url = "https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source", desc = "Консоль", category = "Админ"},
-    {name = "Reviz Admin", url = "https://raw.githubusercontent.com/revizadmin/reviz/master/source.lua", desc = "Админ", category = "Админ"}
+    -- Админ скрипты
+    {name = "Infinite Yield", url = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", desc = "Лучший админ скрипт", category = "Админ", working = true},
+    {name = "CMD-X", url = "https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source", desc = "Мощная консоль", category = "Админ", working = true},
+    {name = "Reviz Admin", url = "https://raw.githubusercontent.com/revizadmin/reviz/master/source.lua", desc = "Админ команды", category = "Админ", working = true},
+    
+    -- Утилиты
+    {name = "Dex Explorer", url = "https://raw.githubusercontent.com/infyiff/backup/main/dex.lua", desc = "Проводник игры", category = "Утилиты", working = true},
+    {name = "SimpleSpy V3", url = "https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua", desc = "Сниффер удаленных событий", category = "Утилиты", working = true},
+    
+    -- Движение
+    {name = "System Broken", url = "https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script", desc = "Флай, спид, телепорт", category = "Движение", working = true},
+    {name = "Invincible Flight", url = "https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414", desc = "Полет сквозь стены", category = "Движение", working = true},
+    
+    -- Физика
+    {name = "Telekinesis V5", url = "https://rawscripts.net/raw/Universal-Script-Fe-Telekinesis-V5-21542", desc = "Телекинез", category = "Физика", working = true},
+    {name = "Fling Things V2", url = "https://rawscripts.net/raw/Fling-Things-and-People-*-V2-62163", desc = "Бросать предметы", category = "Физика", working = true},
+    
+    -- Троллинг
+    {name = "Ultimate Trolling GUI", url = "https://rawscripts.net/raw/Universal-Script-ULTIMATE-TROLLING-GUI-V5-39695", desc = "Троллинг, флай, ноклип", category = "Троллинг", working = true},
+    {name = "FE SCP-096", url = "https://rawscripts.net/raw/Universal-Script-FE-SCP-096-36948", desc = "SCP-096 морф", category = "Троллинг", working = true},
 }
 
+-- Морфы
 local Morphs = {
     {name = "Neko", script = 'require(17024944103).neko("User")', desc = "Превращает в Неко"},
     {name = "Headless", script = [[local c = game.Players.LocalPlayer.Character if c and c:FindFirstChild("Head") then c.Head.Transparency = 1 for _, v in pairs(c.Head:GetChildren()) do if v:IsA("Decal") then v.Transparency = 1 end end end]], desc = "Убирает голову"},
@@ -89,50 +106,62 @@ local Morphs = {
     {name = "Invisible", script = [[local c = game.Players.LocalPlayer.Character if c then for _, p in pairs(c:GetDescendants()) do if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then p.Transparency = 1 end end end]], desc = "Делает невидимым"},
     {name = "Rainbow", script = [[local c = game.Players.LocalPlayer.Character if c then task.spawn(function() while c and c.Parent do for _, p in pairs(c:GetDescendants()) do if p:IsA("BasePart") then p.Color = Color3.fromHSV(tick() % 5 / 5, 1, 1) end end task.wait(0.1) end end) end]], desc = "Радужный цвет"},
     {name = "Skeleton", script = [[local c = game.Players.LocalPlayer.Character if c then for _, p in pairs(c:GetDescendants()) do if p:IsA("BasePart") then p.Color = Color3.fromRGB(255,255,255) p.Material = Enum.Material.Neon end end end]], desc = "Скелет"},
-    {name = "Gold", script = [[local c = game.Players.LocalPlayer.Character if c then for _, p in pairs(c:GetDescendants()) do if p:IsA("BasePart") then p.Color = Color3.fromRGB(255,215,0) p.Material = Enum.Material.Metal end end end]], desc = "Золотой"}
+    {name = "Gold", script = [[local c = game.Players.LocalPlayer.Character if c then for _, p in pairs(c:GetDescendants()) do if p:IsA("BasePart") then p.Color = Color3.fromRGB(255,215,0) p.Material = Enum.Material.Metal end end end]], desc = "Золотой"},
 }
 
+-- Tools
 local ToolsLibrary = {
     {name = "Jerk", desc = "Анимация", script = [[loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Jerk-Off-R15-Animation-FE-20074"))()]]},
     {name = "Orbit", desc = "Вращение вокруг", script = [[loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Orbit-Players-20077"))()]]},
     {name = "Fling", desc = "Кидать игроков", script = [[loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FE-Fling-20076"))()]]},
     {name = "Freecam", desc = "Свободная камера", script = [[loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Freecam-20078"))()]]},
-    {name = "Bring", desc = "Притягивать игроков", script = [[loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Bring-Players-20087"))()]]}
+    {name = "Bring", desc = "Притягивать игроков", script = [[loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Bring-Players-20087"))()]]},
+    {name = "Kill", desc = "Убивать игроков", script = [[loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Kill-Player-20089"))()]]},
 }
 
+-- GUI
 local screen = Instance.new("ScreenGui")
-screen.Name = "SealAdminV16"
+screen.Name = "SealAdminV17"
 screen.ResetOnSpawn = false
 screen.ZIndexBehavior = Enum.ZIndexBehavior.Global
 screen.Parent = CoreGui
 
+-- Key System
 local keyFrame = Instance.new("Frame")
-keyFrame.Size = UDim2.new(0, 400, 0, 250)
-keyFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
+keyFrame.Size = UDim2.new(0, 420, 0, 280)
+keyFrame.Position = UDim2.new(0.5, -210, 0.5, -140)
 keyFrame.BackgroundColor3 = C.bg
 keyFrame.BorderSizePixel = 0
 keyFrame.ZIndex = 100
 keyFrame.Parent = screen
 
-local keyCorner = Instance.new("UICorner")
-keyCorner.CornerRadius = UDim.new(0, 15)
-keyCorner.Parent = keyFrame
+Instance.new("UICorner", keyFrame).CornerRadius = UDim.new(0, 20)
+
+local keyGlow = Instance.new("ImageLabel")
+keyGlow.Size = UDim2.new(1, 80, 1, 80)
+keyGlow.Position = UDim2.new(0, -40, 0, -40)
+keyGlow.BackgroundTransparency = 1
+keyGlow.Image = "rbxassetid://131604521"
+keyGlow.ImageColor3 = C.accent
+keyGlow.ImageTransparency = 0.9
+keyGlow.ZIndex = 99
+keyGlow.Parent = keyFrame
 
 local keyTitle = Instance.new("TextLabel")
-keyTitle.Size = UDim2.new(1, 0, 0, 60)
+keyTitle.Size = UDim2.new(1, 0, 0, 70)
 keyTitle.BackgroundTransparency = 1
-keyTitle.Text = "SEAL ADMIN HUB"
+keyTitle.Text = "SEAL HUB"
 keyTitle.TextColor3 = C.white
-keyTitle.TextSize = 28
+keyTitle.TextSize = 32
 keyTitle.Font = Enum.Font.GothamBlack
 keyTitle.ZIndex = 101
 keyTitle.Parent = keyFrame
 
 local keySubtitle = Instance.new("TextLabel")
 keySubtitle.Size = UDim2.new(1, 0, 0, 30)
-keySubtitle.Position = UDim2.new(0, 0, 0, 50)
+keySubtitle.Position = UDim2.new(0, 0, 0, 55)
 keySubtitle.BackgroundTransparency = 1
-keySubtitle.Text = "Введите ключ доступа"
+keySubtitle.Text = "ADMIN PANEL V17"
 keySubtitle.TextColor3 = C.gray
 keySubtitle.TextSize = 14
 keySubtitle.Font = Enum.Font.Gotham
@@ -140,11 +169,11 @@ keySubtitle.ZIndex = 101
 keySubtitle.Parent = keyFrame
 
 local keyInput = Instance.new("TextBox")
-keyInput.Size = UDim2.new(0, 300, 0, 50)
-keyInput.Position = UDim2.new(0.5, -150, 0.5, -25)
+keyInput.Size = UDim2.new(0, 320, 0, 55)
+keyInput.Position = UDim2.new(0.5, -160, 0.5, -27)
 keyInput.BackgroundColor3 = C.bgLight
 keyInput.Text = ""
-keyInput.PlaceholderText = "Ключ..."
+keyInput.PlaceholderText = "Enter key..."
 keyInput.TextColor3 = C.white
 keyInput.PlaceholderColor3 = C.gray
 keyInput.TextSize = 18
@@ -153,28 +182,24 @@ keyInput.ClearTextOnFocus = true
 keyInput.ZIndex = 101
 keyInput.Parent = keyFrame
 
-local keyInputCorner = Instance.new("UICorner")
-keyInputCorner.CornerRadius = UDim.new(0, 10)
-keyInputCorner.Parent = keyInput
+Instance.new("UICorner", keyInput).CornerRadius = UDim.new(0, 12)
 
 local keyButton = Instance.new("TextButton")
-keyButton.Size = UDim2.new(0, 300, 0, 45)
-keyButton.Position = UDim2.new(0.5, -150, 0.8, 0)
+keyButton.Size = UDim2.new(0, 320, 0, 50)
+keyButton.Position = UDim2.new(0.5, -160, 0.75, 0)
 keyButton.BackgroundColor3 = C.white
-keyButton.Text = "ВОЙТИ"
+keyButton.Text = "UNLOCK"
 keyButton.TextColor3 = C.black
 keyButton.TextSize = 16
 keyButton.Font = Enum.Font.GothamBlack
 keyButton.ZIndex = 101
 keyButton.Parent = keyFrame
 
-local keyButtonCorner = Instance.new("UICorner")
-keyButtonCorner.CornerRadius = UDim.new(0, 10)
-keyButtonCorner.Parent = keyButton
+Instance.new("UICorner", keyButton).CornerRadius = UDim.new(0, 12)
 
 local keyStatus = Instance.new("TextLabel")
 keyStatus.Size = UDim2.new(1, 0, 0, 25)
-keyStatus.Position = UDim2.new(0, 0, 1, -30)
+keyStatus.Position = UDim2.new(0, 0, 1, -35)
 keyStatus.BackgroundTransparency = 1
 keyStatus.Text = ""
 keyStatus.TextColor3 = C.red
@@ -183,106 +208,122 @@ keyStatus.Font = Enum.Font.Gotham
 keyStatus.ZIndex = 101
 keyStatus.Parent = keyFrame
 
+-- Main Window
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 800, 0, 600)
-main.Position = UDim2.new(0.5, -400, 0.5, -300)
+main.Size = UDim2.new(0, 850, 0, 650)
+main.Position = UDim2.new(0.5, -425, 0.5, -325)
 main.BackgroundColor3 = C.bg
 main.BorderSizePixel = 0
 main.Visible = false
 main.Active = true
 main.Parent = screen
 
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 15)
-corner.Parent = main
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 20)
 
+local mainGlow = Instance.new("ImageLabel")
+mainGlow.Size = UDim2.new(1, 100, 1, 100)
+mainGlow.Position = UDim2.new(0, -50, 0, -50)
+mainGlow.BackgroundTransparency = 1
+mainGlow.Image = "rbxassetid://131604521"
+mainGlow.ImageColor3 = C.black
+mainGlow.ImageTransparency = 0.85
+mainGlow.ZIndex = 0
+mainGlow.Parent = main
+
+-- Title Bar
 local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 60)
+titleBar.Size = UDim2.new(1, 0, 0, 70)
 titleBar.BackgroundColor3 = C.bgLight
 titleBar.BorderSizePixel = 0
 titleBar.ZIndex = 2
 titleBar.Parent = main
 
-local titleCorner = Instance.new("UICorner")
-titleCorner.CornerRadius = UDim.new(0, 15)
-titleCorner.Parent = titleBar
+Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0, 20)
 
 local titleText = Instance.new("TextLabel")
 titleText.Size = UDim2.new(0, 400, 1, 0)
-titleText.Position = UDim2.new(0, 25, 0, 0)
+titleText.Position = UDim2.new(0, 30, 0, 0)
 titleText.BackgroundTransparency = 1
-titleText.Text = "SEAL ADMIN HUB V16"
+titleText.Text = "SEAL ADMIN HUB"
 titleText.TextColor3 = C.white
-titleText.TextSize = 24
+titleText.TextSize = 26
 titleText.Font = Enum.Font.GothamBlack
 titleText.TextXAlignment = Enum.TextXAlignment.Left
 titleText.ZIndex = 3
 titleText.Parent = titleBar
 
+local titleVer = Instance.new("TextLabel")
+titleVer.Size = UDim2.new(0, 100, 0, 20)
+titleVer.Position = UDim2.new(0, 30, 1, -25)
+titleVer.BackgroundTransparency = 1
+titleVer.Text = "V17 PREMIUM"
+titleVer.TextColor3 = C.green
+titleVer.TextSize = 12
+titleVer.Font = Enum.Font.GothamBold
+titleVer.TextXAlignment = Enum.TextXAlignment.Left
+titleVer.ZIndex = 3
+titleVer.Parent = titleBar
+
 local fpsLabel = Instance.new("TextLabel")
-fpsLabel.Size = UDim2.new(0, 80, 0, 28)
-fpsLabel.Position = UDim2.new(1, -280, 0, 16)
+fpsLabel.Size = UDim2.new(0, 90, 0, 32)
+fpsLabel.Position = UDim2.new(1, -300, 0, 19)
 fpsLabel.BackgroundColor3 = C.bgDark
 fpsLabel.Text = "60 FPS"
 fpsLabel.TextColor3 = C.green
-fpsLabel.TextSize = 13
+fpsLabel.TextSize = 14
 fpsLabel.Font = Enum.Font.GothamBold
 fpsLabel.ZIndex = 3
 fpsLabel.Parent = titleBar
 
-local fpsCorner = Instance.new("UICorner")
-fpsCorner.CornerRadius = UDim.new(0, 8)
-fpsCorner.Parent = fpsLabel
+Instance.new("UICorner", fpsLabel).CornerRadius = UDim.new(0, 10)
 
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 45, 0, 35)
-closeBtn.Position = UDim2.new(1, -55, 0, 12)
+closeBtn.Position = UDim2.new(1, -60, 0, 17)
 closeBtn.BackgroundColor3 = C.red
 closeBtn.Text = "X"
 closeBtn.TextColor3 = C.white
-closeBtn.TextSize = 18
-closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 16
+closeBtn.Font = Enum.Font.GothamBlack
 closeBtn.ZIndex = 3
 closeBtn.Parent = titleBar
 
-local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 8)
-closeCorner.Parent = closeBtn
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
 
 local minBtn = Instance.new("TextButton")
 minBtn.Size = UDim2.new(0, 45, 0, 35)
-minBtn.Position = UDim2.new(1, -105, 0, 12)
+minBtn.Position = UDim2.new(1, -110, 0, 17)
 minBtn.BackgroundColor3 = C.yellow
 minBtn.Text = "-"
 minBtn.TextColor3 = C.black
-minBtn.TextSize = 24
-minBtn.Font = Enum.Font.GothamBold
+minBtn.TextSize = 20
+minBtn.Font = Enum.Font.GothamBlack
 minBtn.ZIndex = 3
-minBtn.Parent = titleBar
+minBtn.Parent = titleBar)
 
-local minCorner = Instance.new("UICorner")
-minCorner.CornerRadius = UDim.new(0, 8)
-minCorner.Parent = minBtn
+Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 8)
 
+-- Tab Panel
 local tabPanel = Instance.new("Frame")
-tabPanel.Size = UDim2.new(0, 200, 1, -60)
-tabPanel.Position = UDim2.new(0, 0, 0, 60)
+tabPanel.Size = UDim2.new(0, 220, 1, -70)
+tabPanel.Position = UDim2.new(0, 0, 0, 70)
 tabPanel.BackgroundColor3 = C.bgDark
 tabPanel.BorderSizePixel = 0
 tabPanel.ZIndex = 2
 tabPanel.Parent = main
 
+-- Content
 local content = Instance.new("Frame")
-content.Size = UDim2.new(1, -200, 1, -60)
-content.Position = UDim2.new(0, 200, 0, 60)
+content.Size = UDim2.new(1, -220, 1, -70)
+content.Position = UDim2.new(0, 220, 0, 70)
 content.BackgroundColor3 = C.bg
 content.BorderSizePixel = 0
 content.ZIndex = 2
 content.Parent = main
 
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, -20, 1, -20)
-scroll.Position = UDim2.new(0, 10, 0, 10)
+scroll.Size = UDim2.new(1, -25, 1, -25)
+scroll.Position = UDim2.new(0, 12, 0, 12)
 scroll.BackgroundTransparency = 1
 scroll.ScrollBarThickness = 6
 scroll.ScrollBarImageColor3 = C.accent
@@ -290,24 +331,23 @@ scroll.ZIndex = 3
 scroll.Parent = content
 
 local list = Instance.new("UIListLayout")
-list.Padding = UDim.new(0, 8)
+list.Padding = UDim.new(0, 10)
 list.Parent = scroll
 
+-- Open Button
 local openBtn = Instance.new("TextButton")
-openBtn.Size = UDim2.new(0, 60, 0, 60)
-openBtn.Position = UDim2.new(1, -80, 0.5, -30)
+openBtn.Size = UDim2.new(0, 65, 0, 65)
+openBtn.Position = UDim2.new(1, -85, 0.5, -32)
 openBtn.BackgroundColor3 = C.white
 openBtn.Text = "SEAL"
 openBtn.TextColor3 = C.black
-openBtn.TextSize = 16
+openBtn.TextSize = 18
 openBtn.Font = Enum.Font.GothamBlack
 openBtn.ZIndex = 10
 openBtn.Parent = screen
 openBtn.Visible = false
 
-local openCorner = Instance.new("UICorner")
-openCorner.CornerRadius = UDim.new(0, 15)
-openCorner.Parent = openBtn
+Instance.new("UICorner", openBtn).CornerRadius = UDim.new(0, 16)
 
 local tabs = {}
 local buttons = {}
@@ -315,6 +355,7 @@ local currentTab = "Движение"
 local menuOpen = false
 local waitingBind = nil
 
+-- Drag function
 local function makeDraggable(frame, handle)
     local dragging = false
     local dragStart, startPos
@@ -342,11 +383,12 @@ local function makeDraggable(frame, handle)
     end)
 end
 
+-- Create Tab
 local function createTab(name, icon)
     local tab = Instance.new("TextButton")
-    tab.Name = name .. "Tab"
-    tab.Size = UDim2.new(1, -20, 0, 45)
-    tab.Position = UDim2.new(0, 10, 0, #tabs * 51 + 15)
+    tab.Name = name
+    tab.Size = UDim2.new(1, -20, 0, 50)
+    tab.Position = UDim2.new(0, 10, 0, #tabs * 56 + 15)
     tab.BackgroundColor3 = C.bg
     tab.BorderSizePixel = 0
     tab.AutoButtonColor = false
@@ -354,24 +396,22 @@ local function createTab(name, icon)
     tab.ZIndex = 3
     tab.Parent = tabPanel
     
-    local tabCorner = Instance.new("UICorner")
-    tabCorner.CornerRadius = UDim.new(0, 10)
-    tabCorner.Parent = tab
+    Instance.new("UICorner", tab).CornerRadius = UDim.new(0, 12)
     
     local iconLabel = Instance.new("TextLabel")
-    iconLabel.Size = UDim2.new(0, 40, 1, 0)
-    iconLabel.Position = UDim2.new(0, 12, 0, 0)
+    iconLabel.Size = UDim2.new(0, 45, 1, 0)
+    iconLabel.Position = UDim2.new(0, 15, 0, 0)
     iconLabel.BackgroundTransparency = 1
     iconLabel.Text = icon
     iconLabel.TextColor3 = C.gray
-    iconLabel.TextSize = 20
+    iconLabel.TextSize = 22
     iconLabel.Font = Enum.Font.GothamBold
     iconLabel.ZIndex = 4
     iconLabel.Parent = tab
     
     local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, -55, 1, 0)
-    nameLabel.Position = UDim2.new(0, 52, 0, 0)
+    nameLabel.Size = UDim2.new(1, -60, 1, 0)
+    nameLabel.Position = UDim2.new(0, 60, 0, 0)
     nameLabel.BackgroundTransparency = 1
     nameLabel.Text = name
     nameLabel.TextColor3 = C.gray
@@ -382,8 +422,8 @@ local function createTab(name, icon)
     nameLabel.Parent = tab
     
     local highlight = Instance.new("Frame")
-    highlight.Size = UDim2.new(0, 4, 0.6, 0)
-    highlight.Position = UDim2.new(0, 0, 0.2, 0)
+    highlight.Size = UDim2.new(0, 4, 0.5, 0)
+    highlight.Position = UDim2.new(0, 0, 0.25, 0)
     highlight.BackgroundColor3 = C.white
     highlight.BorderSizePixel = 0
     highlight.Visible = false
@@ -392,27 +432,27 @@ local function createTab(name, icon)
     
     tab.MouseEnter:Connect(function()
         if currentTab ~= name then
-            tab.BackgroundColor3 = C.bgLight
+            TweenService:Create(tab, TweenInfo.new(0.2), {BackgroundColor3 = C.hover}):Play()
         end
     end)
     
     tab.MouseLeave:Connect(function()
         if currentTab ~= name then
-            tab.BackgroundColor3 = C.bg
+            TweenService:Create(tab, TweenInfo.new(0.2), {BackgroundColor3 = C.bg}):Play()
         end
     end)
     
     tab.MouseButton1Click:Connect(function()
         if tabs[currentTab] then
             tabs[currentTab].HL.Visible = false
-            tabs[currentTab].Btn.BackgroundColor3 = C.bg
+            TweenService:Create(tabs[currentTab].Btn, TweenInfo.new(0.2), {BackgroundColor3 = C.bg}):Play()
             tabs[currentTab].Icon.TextColor3 = C.gray
             tabs[currentTab].Name.TextColor3 = C.gray
         end
         
         currentTab = name
         highlight.Visible = true
-        tab.BackgroundColor3 = C.bgLight
+        TweenService:Create(tab, TweenInfo.new(0.2), {BackgroundColor3 = C.bgLight}):Play()
         iconLabel.TextColor3 = C.white
         nameLabel.TextColor3 = C.white
         
@@ -432,21 +472,15 @@ local function createTab(name, icon)
         scroll.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 20)
     end)
     
-    table.insert(tabs, {
-        Name = name,
-        Btn = tab,
-        Icon = iconLabel,
-        Name = nameLabel,
-        HL = highlight
-    })
-    
+    table.insert(tabs, {Name = name, Btn = tab, Icon = iconLabel, Name = nameLabel, HL = highlight})
     return tab
 end
 
+-- Create Button
 local function createButton(name, tabName, callback, isToggle, desc)
     local btn = Instance.new("TextButton")
-    btn.Name = name .. "Btn"
-    btn.Size = UDim2.new(1, -10, 0, desc and 65 or 50)
+    btn.Name = name
+    btn.Size = UDim2.new(1, -10, 0, desc and 75 or 60)
     btn.BackgroundColor3 = C.bgLight
     btn.BorderSizePixel = 0
     btn.Text = ""
@@ -454,41 +488,41 @@ local function createButton(name, tabName, callback, isToggle, desc)
     btn.Parent = scroll
     btn.Visible = false
     
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 10)
-    btnCorner.Parent = btn
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 12)
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = C.border
+    stroke.Thickness = 1
+    stroke.Transparency = 0.5
+    stroke.Parent = btn
     
     local toggleFrame = Instance.new("Frame")
-    toggleFrame.Size = UDim2.new(0, 44, 0, 24)
-    toggleFrame.Position = UDim2.new(0, 15, 0, desc and 20 or 13)
+    toggleFrame.Size = UDim2.new(0, 50, 0, 26)
+    toggleFrame.Position = UDim2.new(0, 18, 0, desc and 24 or 17)
     toggleFrame.BackgroundColor3 = C.bgDark
     toggleFrame.BorderSizePixel = 0
     toggleFrame.ZIndex = 5
     toggleFrame.Parent = btn
     
-    local toggleCorner = Instance.new("UICorner")
-    toggleCorner.CornerRadius = UDim.new(0, 12)
-    toggleCorner.Parent = toggleFrame
+    Instance.new("UICorner", toggleFrame).CornerRadius = UDim.new(0, 13)
     
     local toggleCircle = Instance.new("Frame")
-    toggleCircle.Size = UDim2.new(0, 18, 0, 18)
-    toggleCircle.Position = UDim2.new(0, 3, 0.5, -9)
+    toggleCircle.Size = UDim2.new(0, 20, 0, 20)
+    toggleCircle.Position = UDim2.new(0, 3, 0.5, -10)
     toggleCircle.BackgroundColor3 = C.gray
     toggleCircle.BorderSizePixel = 0
     toggleCircle.ZIndex = 6
     toggleCircle.Parent = toggleFrame
     
-    local circleCorner = Instance.new("UICorner")
-    circleCorner.CornerRadius = UDim.new(0, 9)
-    circleCorner.Parent = toggleCircle
+    Instance.new("UICorner", toggleCircle).CornerRadius = UDim.new(0, 10)
     
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, -130, 0, 24)
-    label.Position = UDim2.new(0, 70, 0, desc and 10 or 13)
+    label.Size = UDim2.new(1, -150, 0, 26)
+    label.Position = UDim2.new(0, 78, 0, desc and 12 or 17)
     label.BackgroundTransparency = 1
     label.Text = name
     label.TextColor3 = C.white
-    label.TextSize = 15
+    label.TextSize = 16
     label.Font = Enum.Font.GothamBold
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.ZIndex = 5
@@ -496,8 +530,8 @@ local function createButton(name, tabName, callback, isToggle, desc)
     
     if desc then
         local descLabel = Instance.new("TextLabel")
-        descLabel.Size = UDim2.new(1, -130, 0, 20)
-        descLabel.Position = UDim2.new(0, 70, 0, 35)
+        descLabel.Size = UDim2.new(1, -150, 0, 22)
+        descLabel.Position = UDim2.new(0, 78, 0, 40)
         descLabel.BackgroundTransparency = 1
         descLabel.Text = desc
         descLabel.TextColor3 = C.gray
@@ -509,8 +543,8 @@ local function createButton(name, tabName, callback, isToggle, desc)
     end
     
     local bindLabel = Instance.new("TextLabel")
-    bindLabel.Size = UDim2.new(0, 60, 0, 26)
-    bindLabel.Position = UDim2.new(1, -70, 0.5, -13)
+    bindLabel.Size = UDim2.new(0, 70, 0, 28)
+    bindLabel.Position = UDim2.new(1, -80, 0.5, -14)
     bindLabel.BackgroundColor3 = C.bgDark
     bindLabel.Text = ""
     bindLabel.TextColor3 = C.gray
@@ -519,21 +553,19 @@ local function createButton(name, tabName, callback, isToggle, desc)
     bindLabel.ZIndex = 5
     bindLabel.Parent = btn
     
-    local bindCorner = Instance.new("UICorner")
-    bindCorner.CornerRadius = UDim.new(0, 6)
-    bindCorner.Parent = bindLabel
+    Instance.new("UICorner", bindLabel).CornerRadius = UDim.new(0, 8)
     
     local active = false
     
     local function updateVisuals()
         if active then
-            toggleFrame.BackgroundColor3 = C.white
-            toggleCircle:TweenPosition(UDim2.new(0, 23, 0.5, -9), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
-            toggleCircle.BackgroundColor3 = C.black
+            TweenService:Create(toggleFrame, TweenInfo.new(0.2), {BackgroundColor3 = C.green}):Play()
+            TweenService:Create(toggleCircle, TweenInfo.new(0.2), {Position = UDim2.new(0, 27, 0.5, -10), BackgroundColor3 = C.white}):Play()
+            TweenService:Create(stroke, TweenInfo.new(0.2), {Color = C.green, Transparency = 0}):Play()
         else
-            toggleFrame.BackgroundColor3 = C.bgDark
-            toggleCircle:TweenPosition(UDim2.new(0, 3, 0.5, -9), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
-            toggleCircle.BackgroundColor3 = C.gray
+            TweenService:Create(toggleFrame, TweenInfo.new(0.2), {BackgroundColor3 = C.bgDark}):Play()
+            TweenService:Create(toggleCircle, TweenInfo.new(0.2), {Position = UDim2.new(0, 3, 0.5, -10), BackgroundColor3 = C.gray}):Play()
+            TweenService:Create(stroke, TweenInfo.new(0.2), {Color = C.border, Transparency = 0.5}):Play()
         end
     end
     
@@ -553,13 +585,13 @@ local function createButton(name, tabName, callback, isToggle, desc)
     
     btn.MouseEnter:Connect(function()
         if not active then
-            btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = C.hover}):Play()
         end
     end)
     
     btn.MouseLeave:Connect(function()
         if not active then
-            btn.BackgroundColor3 = C.bgLight
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = C.bgLight}):Play()
         end
     end)
     
@@ -579,9 +611,10 @@ local function createButton(name, tabName, callback, isToggle, desc)
     return btn
 end
 
-local function createInjectButton(scriptData, tabName)
+-- Create Script Button (for ScriptLibrary)
+local function createScriptButton(scriptData, tabName)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -10, 0, 80)
+    btn.Size = UDim2.new(1, -10, 0, 90)
     btn.BackgroundColor3 = C.bgLight
     btn.BorderSizePixel = 0
     btn.Text = ""
@@ -589,82 +622,81 @@ local function createInjectButton(scriptData, tabName)
     btn.Parent = scroll
     btn.Visible = false
     
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 10)
-    btnCorner.Parent = btn
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 12)
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = C.border
+    stroke.Thickness = 1
+    stroke.Transparency = 0.5
+    stroke.Parent = btn
     
     local statusFrame = Instance.new("Frame")
-    statusFrame.Size = UDim2.new(0, 16, 0, 16)
-    statusFrame.Position = UDim2.new(0, 15, 0, 15)
-    statusFrame.BackgroundColor3 = C.red
+    statusFrame.Size = UDim2.new(0, 18, 0, 18)
+    statusFrame.Position = UDim2.new(0, 18, 0, 18)
+    statusFrame.BackgroundColor3 = C.gray
     statusFrame.BorderSizePixel = 0
     statusFrame.ZIndex = 5
     statusFrame.Parent = btn
     
-    local statusCorner = Instance.new("UICorner")
-    statusCorner.CornerRadius = UDim.new(0, 8)
-    statusCorner.Parent = statusFrame
+    Instance.new("UICorner", statusFrame).CornerRadius = UDim.new(0, 9)
     
     local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, -120, 0, 24)
-    nameLabel.Position = UDim2.new(0, 40, 0, 10)
+    nameLabel.Size = UDim2.new(1, -140, 0, 26)
+    nameLabel.Position = UDim2.new(0, 45, 0, 12)
     nameLabel.BackgroundTransparency = 1
     nameLabel.Text = scriptData.name
     nameLabel.TextColor3 = C.white
-    nameLabel.TextSize = 16
+    nameLabel.TextSize = 17
     nameLabel.Font = Enum.Font.GothamBold
     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
     nameLabel.ZIndex = 5
     nameLabel.Parent = btn
     
     local descLabel = Instance.new("TextLabel")
-    descLabel.Size = UDim2.new(1, -120, 0, 20)
-    descLabel.Position = UDim2.new(0, 40, 0, 35)
+    descLabel.Size = UDim2.new(1, -140, 0, 22)
+    descLabel.Position = UDim2.new(0, 45, 0, 38)
     descLabel.BackgroundTransparency = 1
     descLabel.Text = scriptData.desc
     descLabel.TextColor3 = C.gray
-    descLabel.TextSize = 12
+    descLabel.TextSize = 13
     descLabel.Font = Enum.Font.Gotham
     descLabel.TextXAlignment = Enum.TextXAlignment.Left
     descLabel.ZIndex = 5
     descLabel.Parent = btn
     
-    local categoryLabel = Instance.new("TextLabel")
-    categoryLabel.Size = UDim2.new(0, 80, 0, 20)
-    categoryLabel.Position = UDim2.new(0, 40, 1, -26)
-    categoryLabel.BackgroundColor3 = C.bgDark
-    categoryLabel.Text = scriptData.category
-    categoryLabel.TextColor3 = C.accent2
-    categoryLabel.TextSize = 11
-    categoryLabel.Font = Enum.Font.Gotham
-    categoryLabel.ZIndex = 5
-    categoryLabel.Parent = btn
+    local catLabel = Instance.new("TextLabel")
+    catLabel.Size = UDim2.new(0, 90, 0, 22)
+    catLabel.Position = UDim2.new(0, 45, 1, -28)
+    catLabel.BackgroundColor3 = C.bgDark
+    catLabel.Text = scriptData.category
+    catLabel.TextColor3 = C.accent2
+    catLabel.TextSize = 11
+    catLabel.Font = Enum.Font.GothamBold
+    catLabel.ZIndex = 5
+    catLabel.Parent = btn
     
-    local catCorner = Instance.new("UICorner")
-    catCorner.CornerRadius = UDim.new(0, 5)
-    catCorner.Parent = categoryLabel
+    Instance.new("UICorner", catLabel).CornerRadius = UDim.new(0, 6)
     
-    local injectLabel = Instance.new("TextLabel")
-    injectLabel.Size = UDim2.new(0, 80, 0, 30)
-    injectLabel.Position = UDim2.new(1, -95, 0.5, -15)
-    injectLabel.BackgroundColor3 = C.white
-    injectLabel.Text = "INJECT"
-    injectLabel.TextColor3 = C.black
-    injectLabel.TextSize = 13
-    injectLabel.Font = Enum.Font.GothamBlack
-    injectLabel.ZIndex = 5
-    injectLabel.Parent = btn
+    local injectBtn = Instance.new("TextButton")
+    injectBtn.Size = UDim2.new(0, 90, 0, 36)
+    injectBtn.Position = UDim2.new(1, -105, 0.5, -18)
+    injectBtn.BackgroundColor3 = C.white
+    injectBtn.Text = "RUN"
+    injectBtn.TextColor3 = C.black
+    injectBtn.TextSize = 14
+    injectBtn.Font = Enum.Font.GothamBlack
+    injectBtn.ZIndex = 5
+    injectBtn.Parent = btn
     
-    local injectCorner = Instance.new("UICorner")
-    injectCorner.CornerRadius = UDim.new(0, 6)
-    injectCorner.Parent = injectLabel
+    Instance.new("UICorner", injectBtn).CornerRadius = UDim.new(0, 8)
     
     local injected = false
     
-    btn.MouseButton1Click:Connect(function()
+    injectBtn.MouseButton1Click:Connect(function()
         if injected then return end
-        injectLabel.Text = "LOAD..."
-        injectLabel.BackgroundColor3 = C.yellow
+        
+        injectBtn.Text = "..."
+        injectBtn.BackgroundColor3 = C.yellow
         
         task.spawn(function()
             local success = pcall(function()
@@ -674,27 +706,28 @@ local function createInjectButton(scriptData, tabName)
             if success then
                 injected = true
                 statusFrame.BackgroundColor3 = C.green
-                injectLabel.Text = "ON"
-                injectLabel.BackgroundColor3 = C.green
-                injectLabel.TextColor3 = C.white
+                injectBtn.Text = "ON"
+                injectBtn.BackgroundColor3 = C.green
+                injectBtn.TextColor3 = C.white
             else
-                injectLabel.Text = "ERR"
-                injectLabel.BackgroundColor3 = C.red
+                injectBtn.Text = "ERROR"
+                injectBtn.BackgroundColor3 = C.red
                 task.wait(2)
-                injectLabel.Text = "INJECT"
-                injectLabel.BackgroundColor3 = C.white
-                injectLabel.TextColor3 = C.black
+                injectBtn.Text = "RUN"
+                injectBtn.BackgroundColor3 = C.white
+                injectBtn.TextColor3 = C.black
             end
         end)
     end)
     
-    buttons[scriptData.name] = {Btn = btn, Tab = tabName, IsInject = true}
+    buttons[scriptData.name] = {Btn = btn, Tab = tabName, IsScript = true}
     return btn
 end
 
+-- Create Morph Button
 local function createMorphButton(morphData, tabName)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -10, 0, 65)
+    btn.Size = UDim2.new(1, -10, 0, 70)
     btn.BackgroundColor3 = C.bgLight
     btn.BorderSizePixel = 0
     btn.Text = ""
@@ -702,53 +735,54 @@ local function createMorphButton(morphData, tabName)
     btn.Parent = scroll
     btn.Visible = false
     
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 10)
-    btnCorner.Parent = btn
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 12)
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = C.border
+    stroke.Thickness = 1
+    stroke.Transparency = 0.5
+    stroke.Parent = btn
     
     local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, -120, 0, 24)
-    nameLabel.Position = UDim2.new(0, 15, 0, 10)
+    nameLabel.Size = UDim2.new(1, -130, 0, 26)
+    nameLabel.Position = UDim2.new(0, 18, 0, 12)
     nameLabel.BackgroundTransparency = 1
     nameLabel.Text = morphData.name
     nameLabel.TextColor3 = C.white
-    nameLabel.TextSize = 16
+    nameLabel.TextSize = 17
     nameLabel.Font = Enum.Font.GothamBold
     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
     nameLabel.ZIndex = 5
     nameLabel.Parent = btn
     
     local descLabel = Instance.new("TextLabel")
-    descLabel.Size = UDim2.new(1, -120, 0, 20)
-    descLabel.Position = UDim2.new(0, 15, 0, 35)
+    descLabel.Size = UDim2.new(1, -130, 0, 22)
+    descLabel.Position = UDim2.new(0, 18, 0, 38)
     descLabel.BackgroundTransparency = 1
     descLabel.Text = morphData.desc
     descLabel.TextColor3 = C.gray
-    descLabel.TextSize = 12
+    descLabel.TextSize = 13
     descLabel.Font = Enum.Font.Gotham
     descLabel.TextXAlignment = Enum.TextXAlignment.Left
     descLabel.ZIndex = 5
     descLabel.Parent = btn
     
-    local morphLabel = Instance.new("TextLabel")
-    morphLabel.Size = UDim2.new(0, 80, 0, 30)
-    morphLabel.Position = UDim2.new(1, -95, 0.5, -15)
-    morphLabel.BackgroundColor3 = C.gray
-    morphLabel.Text = "MORPH"
-    morphLabel.TextColor3 = C.white
-    morphLabel.TextSize = 13
-    morphLabel.Font = Enum.Font.GothamBlack
-    morphLabel.ZIndex = 5
-    morphLabel.Parent = btn
+    local morphBtn = Instance.new("TextButton")
+    morphBtn.Size = UDim2.new(0, 90, 0, 36)
+    morphBtn.Position = UDim2.new(1, -105, 0.5, -18)
+    morphBtn.BackgroundColor3 = C.accent2
+    morphBtn.Text = "MORPH"
+    morphBtn.TextColor3 = C.black
+    morphBtn.TextSize = 14
+    morphBtn.Font = Enum.Font.GothamBlack
+    morphBtn.ZIndex = 5
+    morphBtn.Parent = btn
     
-    local morphCorner = Instance.new("UICorner")
-    morphCorner.CornerRadius = UDim.new(0, 6)
-    morphCorner.Parent = morphLabel
+    Instance.new("UICorner", morphBtn).CornerRadius = UDim.new(0, 8)
     
-    btn.MouseButton1Click:Connect(function()
-        morphLabel.Text = "..."
-        morphLabel.BackgroundColor3 = C.yellow
-        morphLabel.TextColor3 = C.black
+    morphBtn.MouseButton1Click:Connect(function()
+        morphBtn.Text = "..."
+        morphBtn.BackgroundColor3 = C.yellow
         
         task.spawn(function()
             local success = pcall(function()
@@ -756,19 +790,20 @@ local function createMorphButton(morphData, tabName)
             end)
             
             if success then
-                morphLabel.Text = "OK"
-                morphLabel.BackgroundColor3 = C.green
+                morphBtn.Text = "DONE"
+                morphBtn.BackgroundColor3 = C.green
+                morphBtn.TextColor3 = C.white
                 task.wait(2)
-                morphLabel.Text = "MORPH"
-                morphLabel.BackgroundColor3 = C.gray
-                morphLabel.TextColor3 = C.white
+                morphBtn.Text = "MORPH"
+                morphBtn.BackgroundColor3 = C.accent2
+                morphBtn.TextColor3 = C.black
             else
-                morphLabel.Text = "ERR"
-                morphLabel.BackgroundColor3 = C.red
+                morphBtn.Text = "ERROR"
+                morphBtn.BackgroundColor3 = C.red
                 task.wait(2)
-                morphLabel.Text = "MORPH"
-                morphLabel.BackgroundColor3 = C.gray
-                morphLabel.TextColor3 = C.white
+                morphBtn.Text = "MORPH"
+                morphBtn.BackgroundColor3 = C.accent2
+                morphBtn.TextColor3 = C.black
             end
         end)
     end)
@@ -777,9 +812,10 @@ local function createMorphButton(morphData, tabName)
     return btn
 end
 
+-- Create Tool Button
 local function createToolButton(toolData, tabName)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -10, 0, 65)
+    btn.Size = UDim2.new(1, -10, 0, 70)
     btn.BackgroundColor3 = C.bgLight
     btn.BorderSizePixel = 0
     btn.Text = ""
@@ -787,52 +823,54 @@ local function createToolButton(toolData, tabName)
     btn.Parent = scroll
     btn.Visible = false
     
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 10)
-    btnCorner.Parent = btn
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 12)
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = C.border
+    stroke.Thickness = 1
+    stroke.Transparency = 0.5
+    stroke.Parent = btn
     
     local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, -120, 0, 24)
-    nameLabel.Position = UDim2.new(0, 15, 0, 10)
+    nameLabel.Size = UDim2.new(1, -130, 0, 26)
+    nameLabel.Position = UDim2.new(0, 18, 0, 12)
     nameLabel.BackgroundTransparency = 1
     nameLabel.Text = toolData.name
     nameLabel.TextColor3 = C.white
-    nameLabel.TextSize = 16
+    nameLabel.TextSize = 17
     nameLabel.Font = Enum.Font.GothamBold
     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
     nameLabel.ZIndex = 5
     nameLabel.Parent = btn
     
     local descLabel = Instance.new("TextLabel")
-    descLabel.Size = UDim2.new(1, -120, 0, 20)
-    descLabel.Position = UDim2.new(0, 15, 0, 35)
+    descLabel.Size = UDim2.new(1, -130, 0, 22)
+    descLabel.Position = UDim2.new(0, 18, 0, 38)
     descLabel.BackgroundTransparency = 1
     descLabel.Text = toolData.desc
     descLabel.TextColor3 = C.gray
-    descLabel.TextSize = 12
+    descLabel.TextSize = 13
     descLabel.Font = Enum.Font.Gotham
     descLabel.TextXAlignment = Enum.TextXAlignment.Left
     descLabel.ZIndex = 5
     descLabel.Parent = btn
     
-    local toolLabel = Instance.new("TextLabel")
-    toolLabel.Size = UDim2.new(0, 80, 0, 30)
-    toolLabel.Position = UDim2.new(1, -95, 0.5, -15)
-    toolLabel.BackgroundColor3 = C.white
-    toolLabel.Text = "GET"
-    toolLabel.TextColor3 = C.black
-    toolLabel.TextSize = 13
-    toolLabel.Font = Enum.Font.GothamBlack
-    toolLabel.ZIndex = 5
-    toolLabel.Parent = btn
+    local toolBtn = Instance.new("TextButton")
+    toolBtn.Size = UDim2.new(0, 90, 0, 36)
+    toolBtn.Position = UDim2.new(1, -105, 0.5, -18)
+    toolBtn.BackgroundColor3 = C.white
+    toolBtn.Text = "GET"
+    toolBtn.TextColor3 = C.black
+    toolBtn.TextSize = 14
+    toolBtn.Font = Enum.Font.GothamBlack
+    toolBtn.ZIndex = 5
+    toolBtn.Parent = btn
     
-    local toolCorner = Instance.new("UICorner")
-    toolCorner.CornerRadius = UDim.new(0, 6)
-    toolCorner.Parent = toolLabel
+    Instance.new("UICorner", toolBtn).CornerRadius = UDim.new(0, 8)
     
-    btn.MouseButton1Click:Connect(function()
-        toolLabel.Text = "..."
-        toolLabel.BackgroundColor3 = C.yellow
+    toolBtn.MouseButton1Click:Connect(function()
+        toolBtn.Text = "..."
+        toolBtn.BackgroundColor3 = C.yellow
         
         task.spawn(function()
             local success = pcall(function()
@@ -840,20 +878,20 @@ local function createToolButton(toolData, tabName)
             end)
             
             if success then
-                toolLabel.Text = "ON"
-                toolLabel.BackgroundColor3 = C.green
-                toolLabel.TextColor3 = C.white
+                toolBtn.Text = "ON"
+                toolBtn.BackgroundColor3 = C.green
+                toolBtn.TextColor3 = C.white
                 task.wait(2)
-                toolLabel.Text = "GET"
-                toolLabel.BackgroundColor3 = C.white
-                toolLabel.TextColor3 = C.black
+                toolBtn.Text = "GET"
+                toolBtn.BackgroundColor3 = C.white
+                toolBtn.TextColor3 = C.black
             else
-                toolLabel.Text = "ERR"
-                toolLabel.BackgroundColor3 = C.red
+                toolBtn.Text = "ERROR"
+                toolBtn.BackgroundColor3 = C.red
                 task.wait(2)
-                toolLabel.Text = "GET"
-                toolLabel.BackgroundColor3 = C.white
-                toolLabel.TextColor3 = C.black
+                toolBtn.Text = "GET"
+                toolBtn.BackgroundColor3 = C.white
+                toolBtn.TextColor3 = C.black
             end
         end)
     end)
@@ -862,19 +900,243 @@ local function createToolButton(toolData, tabName)
     return btn
 end
 
-createTab("Движение", ">>")
-createTab("Бой", "X")
-createTab("Игрок", "O")
-createTab("Визуал", "I")
-createTab("Мир", "#")
-createTab("Морфы", "@")
-createTab("Развлечения", "!")
-createTab("Инжект", "$")
-createTab("Скрипты", "%")
-createTab("Custom Chat", "&")
-createTab("Tools", "+")
-createTab("Настройки", "=")
+-- Create Custom Script Input
+local function createCustomScriptInput(tabName)
+    -- Main container
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -10, 0, 400)
+    container.BackgroundColor3 = C.bgLight
+    container.BorderSizePixel = 0
+    container.ZIndex = 4
+    container.Parent = scroll
+    container.Visible = false
+    
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 12)
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = C.border
+    stroke.Thickness = 1
+    stroke.Transparency = 0.5
+    stroke.Parent = container
+    
+    -- Title
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, -20, 0, 30)
+    title.Position = UDim2.new(0, 10, 0, 10)
+    title.BackgroundTransparency = 1
+    title.Text = "CUSTOM SCRIPT EXECUTOR"
+    title.TextColor3 = C.white
+    title.TextSize = 16
+    title.Font = Enum.Font.GothamBlack
+    title.ZIndex = 5
+    title.Parent = container
+    
+    -- Script name input
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(0, 100, 0, 25)
+    nameLabel.Position = UDim2.new(0, 10, 0, 45)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = "Script Name:"
+    nameLabel.TextColor3 = C.gray
+    nameLabel.TextSize = 12
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.ZIndex = 5
+    nameLabel.Parent = container
+    
+    local nameInput = Instance.new("TextBox")
+    nameInput.Size = UDim2.new(1, -130, 0, 30)
+    nameInput.Position = UDim2.new(0, 115, 0, 42)
+    nameInput.BackgroundColor3 = C.bgDark
+    nameInput.Text = "MyScript"
+    nameInput.TextColor3 = C.white
+    nameInput.TextSize = 13
+    nameInput.Font = Enum.Font.Gotham
+    nameInput.ZIndex = 5
+    nameInput.Parent = container
+    
+    Instance.new("UICorner", nameInput).CornerRadius = UDim.new(0, 8)
+    
+    -- Code box
+    local codeBox = Instance.new("TextBox")
+    codeBox.Size = UDim2.new(1, -20, 0, 200)
+    codeBox.Position = UDim2.new(0, 10, 0, 80)
+    codeBox.BackgroundColor3 = C.bgDark
+    codeBox.Text = "-- Введите Lua код здесь\n-- Например:\n-- print('Hello')"
+    codeBox.TextColor3 = C.white
+    codeBox.PlaceholderText = "-- Lua код..."
+    codeBox.TextSize = 12
+    codeBox.Font = Enum.Font.Code
+    codeBox.MultiLine = true
+    codeBox.ClearTextOnFocus = false
+    codeBox.TextXAlignment = Enum.TextXAlignment.Left
+    codeBox.TextYAlignment = Enum.TextYAlignment.Top
+    codeBox.ZIndex = 5
+    codeBox.Parent = container
+    
+    Instance.new("UICorner", codeBox).CornerRadius = UDim.new(0, 8)
+    
+    -- Buttons row
+    local runBtn = Instance.new("TextButton")
+    runBtn.Size = UDim2.new(0, 100, 0, 35)
+    runBtn.Position = UDim2.new(0, 10, 1, -50)
+    runBtn.BackgroundColor3 = C.green
+    runBtn.Text = "RUN"
+    runBtn.TextColor3 = C.black
+    runBtn.TextSize = 14
+    runBtn.Font = Enum.Font.GothamBlack
+    runBtn.ZIndex = 5
+    runBtn.Parent = container
+    
+    Instance.new("UICorner", runBtn).CornerRadius = UDim.new(0, 8)
+    
+    local saveBtn = Instance.new("TextButton")
+    saveBtn.Size = UDim2.new(0, 100, 0, 35)
+    saveBtn.Position = UDim2.new(0, 120, 1, -50)
+    saveBtn.BackgroundColor3 = C.white
+    saveBtn.Text = "SAVE"
+    saveBtn.TextColor3 = C.black
+    saveBtn.TextSize = 14
+    saveBtn.Font = Enum.Font.GothamBlack
+    saveBtn.ZIndex = 5
+    saveBtn.Parent = container
+    
+    Instance.new("UICorner", saveBtn).CornerRadius = UDim.new(0, 8)
+    
+    local clearBtn = Instance.new("TextButton")
+    clearBtn.Size = UDim2.new(0, 100, 0, 35)
+    clearBtn.Position = UDim2.new(0, 230, 1, -50)
+    clearBtn.BackgroundColor3 = C.red
+    clearBtn.Text = "CLEAR"
+    clearBtn.TextColor3 = C.white
+    clearBtn.TextSize = 14
+    clearBtn.Font = Enum.Font.GothamBlack
+    clearBtn.ZIndex = 5
+    clearBtn.Parent = container
+    
+    Instance.new("UICorner", clearBtn).CornerRadius = UDim.new(0, 8)
+    
+    -- Saved scripts list
+    local savedTitle = Instance.new("TextLabel")
+    savedTitle.Size = UDim2.new(1, -20, 0, 25)
+    savedTitle.Position = UDim2.new(0, 10, 0, 290)
+    savedTitle.BackgroundTransparency = 1
+    savedTitle.Text = "SAVED SCRIPTS:"
+    savedTitle.TextColor3 = C.gray
+    savedTitle.TextSize = 12
+    savedTitle.Font = Enum.Font.GothamBold
+    savedTitle.ZIndex = 5
+    savedTitle.Parent = container
+    
+    local savedList = Instance.new("ScrollingFrame")
+    savedList.Size = UDim2.new(1, -20, 0, 60)
+    savedList.Position = UDim2.new(0, 10, 0, 315)
+    savedList.BackgroundColor3 = C.bgDark
+    savedList.BorderSizePixel = 0
+    savedList.ScrollBarThickness = 4
+    savedList.ZIndex = 5
+    savedList.Parent = container
+    
+    Instance.new("UICorner", savedList).CornerRadius = UDim.new(0, 8)
+    
+    local savedListLayout = Instance.new("UIListLayout")
+    savedListLayout.Padding = UDim.new(0, 5)
+    savedListLayout.Parent = savedList
+    
+    -- Functions
+    local function updateSavedList()
+        for _, child in pairs(savedList:GetChildren()) do
+            if child:IsA("TextButton") then child:Destroy() end
+        end
+        
+        for name, code in pairs(savedScripts) do
+            local btn = Instance.new("TextButton")
+            btn.Size = UDim2.new(1, -10, 0, 30)
+            btn.BackgroundColor3 = C.bgLight
+            btn.Text = name
+            btn.TextColor3 = C.white
+            btn.TextSize = 12
+            btn.Font = Enum.Font.Gotham
+            btn.ZIndex = 6
+            btn.Parent = savedList
+            
+            Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+            
+            btn.MouseButton1Click:Connect(function()
+                codeBox.Text = code
+                nameInput.Text = name
+            end)
+            
+            btn.MouseButton2Click:Connect(function()
+                savedScripts[name] = nil
+                updateSavedList()
+            end)
+        end
+        
+        savedList.CanvasSize = UDim2.new(0, 0, 0, savedListLayout.AbsoluteContentSize.Y + 10)
+    end
+    
+    runBtn.MouseButton1Click:Connect(function()
+        local code = codeBox.Text
+        if code and code ~= "" then
+            local success, err = pcall(function()
+                loadstring(code)()
+            end)
+            
+            if success then
+                StarterGui:SetCore("SendNotification", {
+                    Title = "✅ SUCCESS",
+                    Text = "Script executed!",
+                    Duration = 3
+                })
+            else
+                StarterGui:SetCore("SendNotification", {
+                    Title = "❌ ERROR",
+                    Text = tostring(err):sub(1, 50),
+                    Duration = 3
+                })
+            end
+        end
+    end)
+    
+    saveBtn.MouseButton1Click:Connect(function()
+        local name = nameInput.Text
+        local code = codeBox.Text
+        
+        if name and name ~= "" and code and code ~= "" then
+            savedScripts[name] = code
+            updateSavedList()
+            
+            StarterGui:SetCore("SendNotification", {
+                Title = "💾 SAVED",
+                Text = "Script '" .. name .. "' saved!",
+                Duration = 2
+            })
+        end
+    end)
+    
+    clearBtn.MouseButton1Click:Connect(function()
+        codeBox.Text = ""
+        nameInput.Text = "MyScript"
+    end)
+    
+    buttons["CustomScriptExecutor"] = {Btn = container, Tab = tabName, IsInput = true}
+    return container
+end
 
+-- TABS
+createTab("Движение", "⚡")
+createTab("Бой", "⚔️")
+createTab("Игрок", "👤")
+createTab("Визуал", "👁️")
+createTab("Мир", "🌍")
+createTab("Морфы", "🎭")
+createTab("Развлечения", "🎮")
+createTab("Скрипты", "📜")
+createTab("Custom Chat", "💬")
+createTab("Tools", "🛠️")
+createTab("Настройки", "⚙️")
+
+-- ДВИЖЕНИЕ
 createButton("Полет", "Движение", function(a)
     S.fly = a
     if not a then
@@ -932,6 +1194,7 @@ createButton("Высокий прыжок", "Движение", function(a)
     if humanoid then humanoid.JumpPower = a and 150 or 50 end
 end, true, "Прыгать выше")
 
+-- БОЙ
 createButton("Аимбот", "Бой", function(a) S.aimbot = a end, true, "Авто прицел")
 createButton("Сайлент Аим", "Бой", function(a) S.silentaim = a end, true, "Тихий аим")
 createButton("Триггер Бот", "Бой", function(a) S.triggerbot = a end, true, "Авто стрельба")
@@ -945,6 +1208,7 @@ createButton("Хитбокс", "Бой", function(a)
     end
 end, true, "Большие головы")
 
+-- ИГРОК
 createButton("Год мод", "Игрок", function(a)
     S.godmode = a
     if humanoid then
@@ -997,6 +1261,7 @@ createButton("Суицид", "Игрок", function(a)
     if humanoid then humanoid.Health = 0 end
 end, false, "Убить себя")
 
+-- ВИЗУАЛ
 createButton("ESP", "Визуал", function(a)
     S.esp = a
     if a then
@@ -1040,11 +1305,25 @@ createButton("X-Ray", "Визуал", function(a)
     end
 end, true, "Видеть сквозь")
 
+-- МИР
 createButton("Убрать туман", "Мир", function(a)
     S.removefog = a
     Lighting.FogEnd = a and 10000 or 1000
 end, true, "Нет тумана")
 
+createButton("Убрать деревья", "Мир", function(a)
+    S.notrees = a
+    for _, v in pairs(Workspace:GetDescendants()) do
+        if v:IsA("BasePart") and v.Name:lower():find("tree") then
+            v.Transparency = a and 1 or 0
+        end
+    end
+end, true, "Деревья прозрачные")
+
+-- МОРФЫ
+for _, morph in pairs(Morphs) do createMorphButton(morph, "Морфы") end
+
+-- РАЗВЛЕЧЕНИЯ
 createButton("Спин бот", "Развлечения", function(a)
     S.spinbot = a
     if a then
@@ -1067,7 +1346,7 @@ createButton("Спам чат", "Развлечения", function(a)
         task.spawn(function()
             while S.spamchat do
                 pcall(function()
-                    ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("SEAL HUB V16", "All")
+                    ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("SEAL HUB V17", "All")
                 end)
                 task.wait(3)
             end
@@ -1093,42 +1372,12 @@ createButton("Радуга", "Развлечения", function(a)
     end
 end, true, "Менять цвета")
 
-for _, morph in pairs(Morphs) do createMorphButton(morph, "Морфы") end
-for _, script in pairs(ScriptLibrary) do createInjectButton(script, "Инжект") end
-for _, tool in pairs(ToolsLibrary) do createToolButton(tool, "Tools") end
+-- СКРИПТЫ (рабочие скрипты из библиотеки)
+for _, script in pairs(ScriptLibrary) do
+    createScriptButton(script, "Скрипты")
+end
 
-createButton("IY", "Скрипты", function(a)
-    if S.iyinjected then return end
-    S.iyinjected = true
-    task.spawn(function()
-        pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", true))()
-        end)
-    end)
-end, false, "Загрузить IY")
-
-createButton("Рехоуп", "Скрипты", function(a)
-    TeleportService:Teleport(game.PlaceId, player)
-end, false, "Перезайти")
-
-createButton("Сервер хоп", "Скрипты", function(a)
-    local req = request or syn.request
-    if req then
-        local Http = HttpService
-        local servers = {}
-        local cursor = ""
-        repeat
-            local data = req({Url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?limit=100&cursor=" .. cursor})
-            local json = Http:JSONDecode(data.Body)
-            for _, server in pairs(json.data) do
-                if server.playing < server.maxPlayers then table.insert(servers, server.id) end
-            end
-            cursor = json.nextPageCursor or ""
-        until cursor == "" or #servers > 0
-        if #servers > 0 then TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[1], player) end
-    end
-end, false, "Другой сервер")
-
+-- CUSTOM CHAT
 local customChatGui = Instance.new("ScreenGui")
 customChatGui.Name = "SealChat"
 customChatGui.ResetOnSpawn = false
@@ -1136,19 +1385,17 @@ customChatGui.Parent = CoreGui
 customChatGui.Enabled = false
 
 local chatFrame = Instance.new("Frame")
-chatFrame.Size = UDim2.new(0, 350, 0, 400)
-chatFrame.Position = UDim2.new(0, 20, 0.5, -200)
+chatFrame.Size = UDim2.new(0, 380, 0, 450)
+chatFrame.Position = UDim2.new(0, 20, 0.5, -225)
 chatFrame.BackgroundColor3 = C.bg
 chatFrame.BorderSizePixel = 0
 chatFrame.ZIndex = 50
 chatFrame.Parent = customChatGui
 
-local chatCorner = Instance.new("UICorner")
-chatCorner.CornerRadius = UDim.new(0, 15)
-chatCorner.Parent = chatFrame
+Instance.new("UICorner", chatFrame).CornerRadius = UDim.new(0, 16)
 
 local chatTitle = Instance.new("TextLabel")
-chatTitle.Size = UDim2.new(1, 0, 0, 40)
+chatTitle.Size = UDim2.new(1, 0, 0, 45)
 chatTitle.BackgroundColor3 = C.bgLight
 chatTitle.Text = "CUSTOM CHAT"
 chatTitle.TextColor3 = C.white
@@ -1158,21 +1405,23 @@ chatTitle.ZIndex = 51
 chatTitle.Parent = chatFrame
 
 local chatScroll = Instance.new("ScrollingFrame")
-chatScroll.Size = UDim2.new(1, -20, 1, -100)
-chatScroll.Position = UDim2.new(0, 10, 0, 50)
+chatScroll.Size = UDim2.new(1, -20, 1, -110)
+chatScroll.Position = UDim2.new(0, 10, 0, 55)
 chatScroll.BackgroundColor3 = C.bgDark
 chatScroll.BorderSizePixel = 0
 chatScroll.ScrollBarThickness = 4
 chatScroll.ZIndex = 51
 chatScroll.Parent = chatFrame
 
+Instance.new("UICorner", chatScroll).CornerRadius = UDim.new(0, 10)
+
 local chatList = Instance.new("UIListLayout")
-chatList.Padding = UDim.new(0, 5)
+chatList.Padding = UDim.new(0, 6)
 chatList.Parent = chatScroll
 
 local chatInput = Instance.new("TextBox")
-chatInput.Size = UDim2.new(1, -100, 0, 35)
-chatInput.Position = UDim2.new(0, 10, 1, -45)
+chatInput.Size = UDim2.new(1, -110, 0, 40)
+chatInput.Position = UDim2.new(0, 10, 1, -50)
 chatInput.BackgroundColor3 = C.bgLight
 chatInput.Text = ""
 chatInput.PlaceholderText = "Сообщение..."
@@ -1183,43 +1432,37 @@ chatInput.Font = Enum.Font.Gotham
 chatInput.ZIndex = 51
 chatInput.Parent = chatFrame
 
-local chatInputCorner = Instance.new("UICorner")
-chatInputCorner.CornerRadius = UDim.new(0, 8)
-chatInputCorner.Parent = chatInput
+Instance.new("UICorner", chatInput).CornerRadius = UDim.new(0, 8)
 
 local chatSend = Instance.new("TextButton")
-chatSend.Size = UDim2.new(0, 70, 0, 35)
-chatSend.Position = UDim2.new(1, -80, 1, -45)
-chatSend.BackgroundColor3 = C.white
+chatSend.Size = UDim2.new(0, 80, 0, 40)
+chatSend.Position = UDim2.new(1, -90, 1, -50)
+chatSend.BackgroundColor3 = C.green
 chatSend.Text = "SEND"
 chatSend.TextColor3 = C.black
 chatSend.TextSize = 14
 chatSend.Font = Enum.Font.GothamBlack
 chatSend.ZIndex = 51
-chatSend.Parent = chatFrame
+chatSend.Parent = chatFrame)
 
-local chatSendCorner = Instance.new("UICorner")
-chatSendCorner.CornerRadius = UDim.new(0, 8)
-chatSendCorner.Parent = chatSend
+Instance.new("UICorner", chatSend).CornerRadius = UDim.new(0, 8)
 
 local function addMsg(user, msg)
     local f = Instance.new("Frame")
-    f.Size = UDim2.new(1, -10, 0, 50)
+    f.Size = UDim2.new(1, -10, 0, 55)
     f.BackgroundColor3 = C.bgLight
     f.BorderSizePixel = 0
     f.ZIndex = 52
     f.Parent = chatScroll
     
-    local fc = Instance.new("UICorner")
-    fc.CornerRadius = UDim.new(0, 8)
-    fc.Parent = f
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 8)
     
     local u = Instance.new("TextLabel")
-    u.Size = UDim2.new(0, 100, 0, 20)
+    u.Size = UDim2.new(0, 120, 0, 20)
     u.Position = UDim2.new(0, 10, 0, 5)
     u.BackgroundTransparency = 1
     u.Text = user
-    u.TextColor3 = C.white
+    u.TextColor3 = C.green
     u.TextSize = 12
     u.Font = Enum.Font.GothamBold
     u.TextXAlignment = Enum.TextXAlignment.Left
@@ -1227,12 +1470,12 @@ local function addMsg(user, msg)
     u.Parent = f
     
     local m = Instance.new("TextLabel")
-    m.Size = UDim2.new(1, -20, 0, 20)
-    m.Position = UDim2.new(0, 10, 0, 25)
+    m.Size = UDim2.new(1, -20, 0, 25)
+    m.Position = UDim2.new(0, 10, 0, 26)
     m.BackgroundTransparency = 1
     m.Text = msg
-    m.TextColor3 = C.gray
-    m.TextSize = 12
+    m.TextColor3 = C.white
+    m.TextSize = 13
     m.Font = Enum.Font.Gotham
     m.TextXAlignment = Enum.TextXAlignment.Left
     m.TextWrapped = true
@@ -1267,7 +1510,7 @@ createButton("Вкл Custom Chat", "Custom Chat", function(a)
     customChatGui.Enabled = a
     if a then
         StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
-        addMsg("SYSTEM", "Custom Chat ON")
+        addMsg("SYSTEM", "Custom Chat активирован!")
     else
         StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
     end
@@ -1289,39 +1532,23 @@ createButton("Очистить", "Custom Chat", function(a)
     addMsg("SYSTEM", "Чат очищен")
 end, false, "Удалить все")
 
-createButton("Jerk", "Tools", function(a)
-    S.jerk = a
-    if a then loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Jerk-Off-R15-Animation-FE-20074"))() end
-end, true, "Анимация")
+-- TOOLS
+for _, tool in pairs(ToolsLibrary) do createToolButton(tool, "Tools") end
 
-createButton("Orbit", "Tools", function(a)
-    S.orbit = a
-    if a then loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Orbit-Players-20077"))() end
-end, true, "Вращение")
-
-createButton("Fling", "Tools", function(a)
-    S.fling = a
-    if a then loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FE-Fling-20076"))() end
-end, true, "Кидать")
-
-createButton("Freecam", "Tools", function(a)
-    S.freecam = a
-    if a then loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Freecam-20078"))() end
-end, true, "Камера")
-
+-- НАСТРОЙКИ
 createButton("Сохранить конфиг", "Настройки", function(a)
-    local cfg = {binds = binds, settings = S}
+    local cfg = {binds = binds, settings = S, savedScripts = savedScripts}
     local s = pcall(function()
         local j = HttpService:JSONEncode(cfg)
         print("CFG:", j)
     end)
     if s then
-        StarterGui:SetCore("SendNotification", {Title = "CFG", Text = "Сохранено", Duration = 2})
+        StarterGui:SetCore("SendNotification", {Title = "💾 CFG", Text = "Сохранено", Duration = 2})
     end
 end, false, "Сохранить настройки")
 
 createButton("Загрузить конфиг", "Настройки", function(a)
-    StarterGui:SetCore("SendNotification", {Title = "CFG", Text = "Загружено", Duration = 2})
+    StarterGui:SetCore("SendNotification", {Title = "📂 CFG", Text = "Загружено", Duration = 2})
 end, false, "Загрузить настройки")
 
 createButton("Сбросить все", "Настройки", function(a)
@@ -1329,13 +1556,13 @@ createButton("Сбросить все", "Настройки", function(a)
     for _, btn in pairs(buttons) do if btn.Set and btn.IsToggle then btn.Set(false) end end
     for _, conn in pairs(loopConnections) do conn:Disconnect() end
     loopConnections = {}
-    StarterGui:SetCore("SendNotification", {Title = "CFG", Text = "Все сброшено", Duration = 2})
+    StarterGui:SetCore("SendNotification", {Title = "🔄 CFG", Text = "Все сброшено", Duration = 2})
 end, false, "Отключить все")
 
 createButton("Убить скрипт", "Настройки", function(a)
     screen:Destroy()
     customChatGui:Destroy()
-    StarterGui:SetCore("SendNotification", {Title = "BYE", Text = "Выключено", Duration = 2})
+    StarterGui:SetCore("SendNotification", {Title = "👋 BYE", Text = "Выключено", Duration = 2})
 end, false, "Выключить хаб")
 
 createButton("Скрыть UI", "Настройки", function(a)
@@ -1344,12 +1571,17 @@ createButton("Скрыть UI", "Настройки", function(a)
     openBtn.Visible = true
 end, false, "Свернуть")
 
+-- Custom Script Executor (вкладка Инжект заменена на Executor)
+createTab("Executor", "▶️")
+createCustomScriptInput("Executor")
+
+-- Functions
 local function toggleMenu()
     menuOpen = not menuOpen
     main.Visible = menuOpen
     if menuOpen then
         main.Size = UDim2.new(0, 0, 0, 0)
-        TweenService:Create(main, TweenInfo.new(0.3, Enum.EasingStyle.Back), {Size = UDim2.new(0, 800, 0, 600)}):Play()
+        TweenService:Create(main, TweenInfo.new(0.3, Enum.EasingStyle.Back), {Size = UDim2.new(0, 850, 0, 650)}):Play()
         for _, btn in pairs(buttons) do btn.Btn.Visible = false end
         local count = 0
         for _, btn in pairs(buttons) do
@@ -1365,12 +1597,12 @@ end
 
 keyButton.MouseButton1Click:Connect(function()
     if checkKey(keyInput.Text) then
-        TweenService:Create(keyFrame, TweenInfo.new(0.5), {Position = UDim2.new(0.5, -200, -1, -125)}):Play()
+        TweenService:Create(keyFrame, TweenInfo.new(0.5), {Position = UDim2.new(0.5, -210, -1, -140)}):Play()
         task.wait(0.5)
         keyFrame:Destroy()
         main.Visible = true
         openBtn.Visible = true
-        StarterGui:SetCore("SendNotification", {Title = "OK", Text = "Добро пожаловать", Duration = 3})
+        StarterGui:SetCore("SendNotification", {Title = "✅ OK", Text = "Добро пожаловать", Duration = 3})
     else
         keyStatus.Text = "Неверный ключ"
         keyInput.Text = ""
@@ -1473,7 +1705,7 @@ makeDraggable(chatFrame, chatTitle)
 local firstTab = tabs[1]
 if firstTab then
     firstTab.HL.Visible = true
-    firstTab.Btn.BackgroundColor3 = C.bgLight
+    TweenService:Create(firstTab.Btn, TweenInfo.new(0.2), {BackgroundColor3 = C.bgLight}):Play()
     firstTab.Icon.TextColor3 = C.white
     firstTab.Name.TextColor3 = C.white
 end
