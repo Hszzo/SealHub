@@ -87,6 +87,7 @@ local ScriptLibrary = {
     
     -- НОВЫЕ СКРИПТЫ:
     {name = "Build A Boat Ultimate", url = "https://rawscripts.net/raw/Build-A-Boat-For-Treasure-Ultimte-B3BFT-Script-28601", desc = "Для Build A Boat", category = "Игры"},
+    {name = "Какая то хуета Цмд" url = "loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-MNAHub-CMD-The-best-Commands-hub-for-Xeno-242412"))()", desc = "Красивая но лагучая цмд", category = "Инструмент"},
     {name = "Super Ring V4", url = "https://rawscripts.net/raw/Natural-Disaster-Survival-Super-ring-V4-24296", desc = "Стань далбаебом в натурал дизастерс", category = "Игры"},
     {name = "God Mode Script", url = "https://raw.githubusercontent.com/miglels33/God-Mode-Script/refs/heads/main/GodModeScript.md", desc = "Бессмертие", category = "Игрок"},
     {name = "Invincible Flight", url = "https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414", desc = "Летать как неразвиваемый далбайоб", category = "Движение"},
