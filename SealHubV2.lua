@@ -84,6 +84,18 @@ local ScriptLibrary = {
     {name = "System Broken", url = "https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script", desc = "Флай, спид, телепорт", category = "Движение"},
     {name = "Telekinesis V5", url = "https://rawscripts.net/raw/Universal-Script-Fe-Telekinesis-V5-21542", desc = "Телекинез", category = "Физика"},
     {name = "Ultimate Trolling GUI", url = "https://rawscripts.net/raw/Universal-Script-ULTIMATE-TROLLING-GUI-V5-39695", desc = "Троллинг", category = "Троллинг"},
+    
+    -- НОВЫЕ СКРИПТЫ:
+    {name = "Build A Boat Ultimate", url = "https://rawscripts.net/raw/Build-A-Boat-For-Treasure-Ultimte-B3BFT-Script-28601", desc = "Для Build A Boat", category = "Игры"},
+    {name = "Super Ring V4", url = "https://rawscripts.net/raw/Natural-Disaster-Survival-Super-ring-V4-24296", desc = "Летающие блоки в Disaster", category = "Игры"},
+    {name = "God Mode Script", url = "https://raw.githubusercontent.com/miglels33/God-Mode-Script/refs/heads/main/GodModeScript.md", desc = "Бессмертие", category = "Игрок"},
+    {name = "Invincible Flight", url = "https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414", desc = "Летать как супергерой", category = "Движение"},
+    {name = "Fling Things V2", url = "https://rawscripts.net/raw/Fling-Things-and-People-*-V2-62163", desc = "Бросать вещи и людей", category = "Физика"},
+    {name = "Lalol Hub", url = "https://rawscripts.net/raw/Universal-Script-Lalol-hub-30354", desc = "Бэкдор скрипт", category = "Админ"},
+    {name = "Project Ham", url = "https://pastebin.com/raw/KSvbtcPE", desc = "Крутой универсальный скрипт", category = "Универсал"},
+    {name = "FE SCP-096", url = "https://rawscripts.net/raw/Universal-Script-FE-SCP-096-36948", desc = "Скромник SCP", category = "Морфы"},
+    {name = "Murder Mystery", url = "https://globalexp.xyz/", desc = "Мурдер Мистери скрипт", category = "Игры"},
+    {name = "Murder Mystery Aimbot", url = "https://globalexp.xyz/aimbotkey", desc = "Аимбот для MM2", category = "Игры"},
 }
 
 -- Морфы
