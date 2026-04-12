@@ -1391,8 +1391,8 @@ createTab("Мир", "🌍")
 createTab("Морфы", "🎭")
 createTab("Развлечения", "🎮")
 createTab("Скрипты", "📜")
-createTab("СкриптБлокс - Отключен", "🌐") 
-createTab("Чат скрипта - Отключен", "💬")
+createTab("ScriptBlox", "🌐")
+createTab("Custom Chat", "💬")
 createTab("Tools", "🛠️")
 createTab("Executor", "⚡")
 createTab("Настройки", "⚙️")
@@ -1636,7 +1636,7 @@ end, true, "Менять цвета")
 -- СКРИПТЫ
 for _, script in pairs(ScriptLibrary) do createScriptButton(script, "Скрипты") end
 
--- SCRIPTBLOX BROWSER (НОВОЕ!)
+-- SCRIPTBLOX BROWSER 
 createScriptBloxBrowser("ScriptBlox")
 
 -- CUSTOM CHAT
