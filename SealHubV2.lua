@@ -24,7 +24,7 @@ local character = player.Character
 local humanoid = character:WaitForChild("Humanoid")
 local hrp = character:WaitForChild("HumanoidRootPart")
 
--- Цветовая схема (улучшенная)
+-- Цветовая схема 
 local C = {
     bg = Color3.fromRGB(10, 10, 15),
     bgLight = Color3.fromRGB(20, 20, 30),
@@ -955,7 +955,7 @@ local function createScriptBloxBrowser(tabName)
     title.Size = UDim2.new(1, -20, 0, 40)
     title.Position = UDim2.new(0, 10, 0, 10)
     title.BackgroundTransparency = 1
-    title.Text = "🔍 СкриптБлокс (Нихуя не работает онли заготовленные скрипты)"
+    title.Text = "🔍 СкриптБлокс"
     title.TextColor3 = C.accent
     title.TextSize = 18
     title.Font = Enum.Font.GothamBlack
@@ -1148,7 +1148,7 @@ local function createCustomScriptInput(tabName)
     title.Size = UDim2.new(1, -20, 0, 40)
     title.Position = UDim2.new(0, 10, 0, 10)
     title.BackgroundTransparency = 1
-    title.Text = "⚡ CUSTOM SCRIPT EXECUTOR"
+    title.Text = "⚡ Кастом скрипты"
     title.TextColor3 = C.accent
     title.TextSize = 18
     title.Font = Enum.Font.GothamBlack
@@ -1218,7 +1218,7 @@ local function createCustomScriptInput(tabName)
     codeBox.ZIndex = 6
     codeBox.Parent = codeFrame
     
-    -- Buttons Row (отдельно, не внутри друг друга!)
+    -- Buttons Row
     local buttonsRow = Instance.new("Frame")
     buttonsRow.Size = UDim2.new(1, -20, 0, 45)
     buttonsRow.Position = UDim2.new(0, 10, 0, 330)
@@ -1391,8 +1391,8 @@ createTab("Мир", "🌍")
 createTab("Морфы", "🎭")
 createTab("Развлечения", "🎮")
 createTab("Скрипты", "📜")
-createTab("СкриптБлокс", "🌐") 
-createTab("Кастом чат тюленей", "💬")
+createTab("СкриптБлокс - Отключен", "🌐") 
+createTab("Чат скрипта - Отключен", "💬")
 createTab("Tools", "🛠️")
 createTab("Executor", "⚡")
 createTab("Настройки", "⚙️")
