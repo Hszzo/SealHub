@@ -87,14 +87,14 @@ local ScriptLibrary = {
     
     -- НОВЫЕ СКРИПТЫ:
     {name = "Build A Boat Ultimate", url = "https://rawscripts.net/raw/Build-A-Boat-For-Treasure-Ultimte-B3BFT-Script-28601", desc = "Для Build A Boat", category = "Игры"},
-    {name = "Super Ring V4", url = "https://rawscripts.net/raw/Natural-Disaster-Survival-Super-ring-V4-24296", desc = "Летающие блоки в Disaster", category = "Игры"},
+    {name = "Super Ring V4", url = "https://rawscripts.net/raw/Natural-Disaster-Survival-Super-ring-V4-24296", desc = "Стань далбаебом в натурал дизастерс", category = "Игры"},
     {name = "God Mode Script", url = "https://raw.githubusercontent.com/miglels33/God-Mode-Script/refs/heads/main/GodModeScript.md", desc = "Бессмертие", category = "Игрок"},
-    {name = "Invincible Flight", url = "https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414", desc = "Летать как супергерой", category = "Движение"},
-    {name = "Fling Things V2", url = "https://rawscripts.net/raw/Fling-Things-and-People-*-V2-62163", desc = "Бросать вещи и людей", category = "Физика"},
+    {name = "Invincible Flight", url = "https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414", desc = "Летать как неразвиваемый далбайоб", category = "Движение"},
+    {name = "Fling Things V2", url = "https://rawscripts.net/raw/Fling-Things-and-People-*-V2-62163", desc = "Бросать вещи и людей", category = "Игра"},
     {name = "Lalol Hub", url = "https://rawscripts.net/raw/Universal-Script-Lalol-hub-30354", desc = "Бэкдор скрипт", category = "Админ"},
     {name = "Project Ham", url = "https://pastebin.com/raw/KSvbtcPE", desc = "Крутой универсальный скрипт", category = "Универсал"},
     {name = "FE SCP-096", url = "https://rawscripts.net/raw/Universal-Script-FE-SCP-096-36948", desc = "Скромник SCP", category = "Морфы"},
-    {name = "Murder Mystery", url = "https://globalexp.xyz/", desc = "Мурдер Мистери скрипт", category = "Игры"},
+    {name = "Murder Mystery", url = "https://globalexp.xyz/", desc = "Мурдер Сристери 2 скрипт", category = "Игры"},
     {name = "Murder Mystery Aimbot", url = "https://globalexp.xyz/aimbotkey", desc = "Аимбот для MM2", category = "Игры"},
 }
 
